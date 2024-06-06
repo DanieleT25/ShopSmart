@@ -1,6 +1,6 @@
 import numpy as np
 
-class CollaborativeFilter():
+class CollaborativeFilter_UserUser():
     def __init__(self, N):
         self.N = N
         self.cosine = lambda x, y: np.dot(x, y) / (np.sqrt(np.dot(x, x)) * np.sqrt(np.dot(y, y)))
