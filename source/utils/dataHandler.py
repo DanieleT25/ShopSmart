@@ -83,9 +83,9 @@ class DataHandler:
        
        plt.figure(figsize=(10, 6))
        product_sales.head(20).plot(kind='bar')
-       plt.title('Top 20 Prodotti per Numero di Vendite')
-       plt.xlabel('EAN del Prodotto')
-       plt.ylabel('Numero di Vendite')
+       plt.title('Top 20 Products by Number of Sales')
+       plt.xlabel('Product EAN')
+       plt.ylabel('Number of Sales')
        plt.show()
        
     def freqCustPurch(self):
@@ -95,9 +95,9 @@ class DataHandler:
 
         plt.figure(figsize=(10, 6))
         customer_frequency.head(20).plot(kind='bar')
-        plt.title('Top 20 Clienti per Numero di Acquisti')
-        plt.xlabel('ID Tessera Cliente')
-        plt.ylabel('Numero di Acquisti')
+        plt.title('Top 20 Customers by Number of Purchases')
+        plt.xlabel('Customer Card ID')
+        plt.ylabel('Number of Purchases')
         plt.show()
 
     def plot_sales(self):
@@ -109,9 +109,9 @@ class DataHandler:
         monthly_sales = self.df.groupby('month')['r_importo_lordo'].sum()
         plt.figure(figsize=(10, 6))
         monthly_sales.plot(kind='bar')
-        plt.title('Vendite Mensili')
-        plt.xlabel('Mese')
-        plt.ylabel('Importo Lordo delle Vendite')
+        plt.title('Monthly Sales')
+        plt.xlabel('Month')
+        plt.ylabel('Gross Sales Amount')
         plt.show()
 
         self.df['day_of_week'] = self.df['day_of_week'].apply(lambda x: x + 1)
@@ -119,7 +119,7 @@ class DataHandler:
 
         plt.figure(figsize=(10, 6))
         weekly_sales.plot(kind='bar')
-        plt.title('Vendite Settimanali')
-        plt.xlabel('Giorno della Settimana')
-        plt.ylabel('Importo Lordo delle Vendite')
+        plt.title('Weekly Sales')
+        plt.xlabel('Day of the Week')
+        plt.ylabel('Gross Sales Amount')
         plt.show()
