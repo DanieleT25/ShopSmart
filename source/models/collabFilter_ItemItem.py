@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
+from .collabFilter import CollaborativeFilter
 
-class CollaborativeFilter_ItemItem():
+class CollaborativeFilter_ItemItem(CollaborativeFilter):
     def __init__(self, N):
         self.N = N
         self.cosine = lambda x, y: np.dot(x, y) / (np.sqrt(np.dot(x, x)) * np.sqrt(np.dot(y, y)))
