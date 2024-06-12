@@ -31,6 +31,11 @@ class DataHandler:
         self.df = self.df[self.df['cat_mer'] != 'NNNNN']
         self.df = self.df[self.df['cod_prod'] != '1090011']  # shopping bag
 
+    def __minMax_normalization(self):
+        """Normalize the data using Min-Max normalization"""
+
+        self.df['value'] = (self.df['value'] - self.df['value'].min()) / (self.df['value'].max() - self.df['value'].min())
+
     def __split_and_save_data(self):
         """Split the data into training and test sets and save them as CSV files"""
 
@@ -71,6 +76,8 @@ class DataHandler:
             raise ValueError("index must be 'tessera' or 'id_sc'")
         
         self.df = self.df.groupby([index, 'cod_prod', 'descr_prod']).agg(value=('cod_prod', 'count')).reset_index()
+        
+        self.__minMax_normalization()
         self.__split_and_save_data()
 
     def get_data(self):
