@@ -42,7 +42,8 @@ class DataHandler:
         np.random.seed(42)
         random.seed(42)
 
-        train_data, test_data = train_test_split(self.df, test_size=0.25)
+        #train_data, test_data = train_test_split(self.df, test_size=0.25)
+        train_data, test_data = train_test_split(self.df, test_size=0.001)
 
         train_data.to_csv('../Data/train_data.csv', index=False)
         test_data.to_csv('../Data/test_data.csv', index=False)

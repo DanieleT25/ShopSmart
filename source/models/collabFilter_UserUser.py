@@ -4,7 +4,9 @@ from .collabFilter import CollaborativeFilter
 class CollaborativeFilter_UserUser(CollaborativeFilter):
     def __init__(self, N):
         self.N = N
-        self.cosine = lambda x, y: np.dot(x, y) / (np.sqrt(np.dot(x, x)) * np.sqrt(np.dot(y, y)))
+
+    def cosine(self, x, y):
+        return np.dot(x, y) / (np.sqrt(np.dot(x, x)) * np.sqrt(np.dot(y, y)))
         
     def fit(self, U):
         self.U = U
