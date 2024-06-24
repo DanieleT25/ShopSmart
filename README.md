@@ -51,12 +51,6 @@ ShopSmart is a recommendation system that uses collaborative filtering to sugges
 2. Exploratory Data Analysis:
    - Run `02-EDA.ipynb` to visualize and analyze the data.
 
-3. Model Training:
-   - Run `03-train.ipynb` to train the collaborative filtering models (item-item and user-user).
-
-4. Model Testing:
-   - Run `04-test.ipynb` to test the trained models and calculate the MAE (Mean Absolute Error).
-
-5. Model Comparison:
-   - Run `05-compare.ipynb` to compare the MAE of the two models and recommend 5 items using the model with the lowest MAE.
+3. Model Comparison:
+   - Run `03-compare.ipynb` to compare the MAE of the models and recommend 5 items using the model with the lowest MAE.
    
