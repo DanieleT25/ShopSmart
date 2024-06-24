@@ -36,14 +36,13 @@ class DataHandler:
 
         self.df['value'] = (self.df['value'] - self.df['value'].min()) / (self.df['value'].max() - self.df['value'].min())
 
-    def __split_and_save_data(self):
+    def __split_and_save_data(self, tSize=0.25):
         """Split the data into training and test sets and save them as CSV files"""
 
         np.random.seed(42)
         random.seed(42)
 
-        #train_data, test_data = train_test_split(self.df, test_size=0.25)
-        train_data, test_data = train_test_split(self.df, test_size=0.001)
+        train_data, test_data = train_test_split(self.df, test_size=tSize)
 
         train_data.to_csv('../Data/train_data.csv', index=False)
         test_data.to_csv('../Data/test_data.csv', index=False)
@@ -70,7 +69,7 @@ class DataHandler:
         self.df = self.df[(self.df['data'].dt.month >= start_month) & (self.df['data'].dt.month <= end_month)]
         print(f"Dataframe filtered by quarter: {quarter}")
 
-    def process(self, index):
+    def process(self, index, tSize=0.25):
         """Process the data by the given index"""
 
         if index not in ['tessera', 'id_sc']:
@@ -79,7 +78,7 @@ class DataHandler:
         self.df = self.df.groupby([index, 'cod_prod', 'descr_prod']).agg(value=('cod_prod', 'count')).reset_index()
         
         self.__minMax_normalization()
-        self.__split_and_save_data()
+        self.__split_and_save_data(tSize)
 
     def get_data(self):
         return self.df
