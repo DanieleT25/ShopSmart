@@ -9,9 +9,7 @@ ShopSmart is a recommendation system that uses collaborative filtering to sugges
 - `notebook/`: Contains Jupyter notebooks for preparation, analysis, and model comparison.
   - `01-preprocessing.ipynb`
   - `02-EDA.ipynb`
-  - `03-train.ipynb`
-  - `04-test.ipynb`
-  - `05-compare.ipynb`
+  - `03-compare.ipynb`
 - `source/`: Contains source code for models and utilities.
   - `models/`
     - `collabFilter_ItemItem.py`
