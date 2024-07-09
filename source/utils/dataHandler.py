@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 import random
 from sklearn.model_selection import train_test_split
+import os
 
 class DataHandler:
     COLUMNS = ['db_sc', 'id_sc', 'pv', 'data', 'cassa', 'cassiere', 'num_scontrino', 'ora', 'tessera', 't_flag', 'num_riga',
@@ -21,31 +23,40 @@ class DataHandler:
     def __init__(self, filepath):
         self.df = pd.read_csv(filepath)
         
-
     def __filter_data(self):
         """Filter the data based on specific conditions"""
         
-        self.df = self.df.dropna(subset=['cod_prod'])
+        # self.df = self.df.dropna(subset=['cod_prod'])
+        self.df = self.df.dropna(subset=['liv3'])
         self.df = self.df[self.df['r_tipo_riga'] != 'ANNULLO']
         self.df = self.df[self.df['r_importo_lordo'] != 0]
         self.df = self.df[self.df['cat_mer'] != 'NNNNN']
         self.df = self.df[self.df['cod_prod'] != '1090011']  # shopping bag
+    
+    def minMax_normalization_1_10(self, df):
+        """Normalize the data using Min-Max normalization to the range [1, 10]"""
+        
+        tmp = df.copy()
+        tmp['value'] = 1 + (tmp['value'] - tmp['value'].min()) * 9 / (tmp['value'].max() - tmp['value'].min())
+        return tmp
 
-    def __minMax_normalization(self):
-        """Normalize the data using Min-Max normalization"""
-
-        self.df['value'] = (self.df['value'] - self.df['value'].min()) / (self.df['value'].max() - self.df['value'].min())
-
-    def __split_and_save_data(self, tSize=0.25):
+    def split_and_save_data(self, df, path, tSize=0.25):
         """Split the data into training and test sets and save them as CSV files"""
 
         np.random.seed(42)
         random.seed(42)
 
-        train_data, test_data = train_test_split(self.df, test_size=tSize)
+        train_data, test_data = train_test_split(df, test_size=tSize)
 
-        train_data.to_csv('../Data/train_data.csv', index=False)
-        test_data.to_csv('../Data/test_data.csv', index=False)
+        # Ensure the path ends with a separator
+        if not path.endswith(os.path.sep):
+            path += os.path.sep
+
+        # Save in the path
+        self.df.to_csv(os.path.join(path, 'data_clean.csv'), index=False)        
+        train_data.to_csv(os.path.join(path, 'train_data.csv'), index=False)
+        test_data.to_csv(os.path.join(path, 'test_data.csv'), index=False)
+
 
     def preprocess_data(self):
         """Preprocess the data"""
@@ -54,8 +65,8 @@ class DataHandler:
         
         self.df['data'] = pd.to_datetime(self.df['data'])
         self.df['ora'] = pd.to_datetime(self.df['ora'], format='%H:%M').dt.time
-        self.df['cod_prod'] = self.df['cod_prod'].astype(str)
-        self.df['cod_prod'] = self.df['cod_prod'].apply(lambda x: x.split('.')[0] if '.0' in x else x)
+        # self.df['cod_prod'] = self.df['cod_prod'].astype(str)
+        # self.df['cod_prod'] = self.df['cod_prod'].apply(lambda x: x.split('.')[0] if '.0' in x else x)
 
         self.__filter_data()
 
@@ -69,19 +80,44 @@ class DataHandler:
         self.df = self.df[(self.df['data'].dt.month >= start_month) & (self.df['data'].dt.month <= end_month)]
         print(f"Dataframe filtered by quarter: {quarter}")
 
-    def process(self, index, tSize=0.25):
+    def remove_outliers(self, df, column):
+        Q1 = df[column].quantile(0.25)
+        Q3 = df[column].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        df = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+        return df
+
+    def process(self, index, columns, descrArticolo, lamb=False, remuve_outliers=False):
         """Process the data by the given index"""
 
         if index not in ['tessera', 'id_sc']:
             raise ValueError("index must be 'tessera' or 'id_sc'")
         
-        self.df = self.df.groupby([index, 'cod_prod', 'descr_prod']).agg(value=('cod_prod', 'count')).reset_index()
-        
-        self.__minMax_normalization()
-        self.__split_and_save_data(tSize)
+        tmp = self.df.groupby([index, columns, descrArticolo]).agg(value=(columns, 'count')).reset_index()
+
+        if lamb is not False:
+            tmp = tmp[tmp['value'] <= lamb]
+        if remuve_outliers is True:
+            tmp = self.remove_outliers(tmp, 'value')
+        return tmp
 
     def get_data(self):
         return self.df
+    
+    def descriptiveStats(self, df):
+        plt.figure(figsize=(12, 6))
+        plt.subplot(1, 2, 1)
+        sns.histplot(df['value'], kde=True)
+        plt.title('Purchase Frequency Distribution')
+
+        plt.subplot(1, 2, 2)
+        sns.boxplot(x=df['value'])
+        plt.title('Purchase Frequency Box Plot')
+
+        print("Original Descriptive Statistics:")
+        print(df['value'].describe())
     
     def distribSales(self):
        """Plot the distribution of sales by product"""
@@ -91,7 +127,7 @@ class DataHandler:
        plt.figure(figsize=(10, 6))
        product_sales.head(20).plot(kind='bar')
        plt.title('Top 20 Products by Number of Sales')
-       plt.xlabel('Product EAN')
+       plt.xlabel('Category Code')
        plt.ylabel('Number of Sales')
        plt.show()
        
@@ -110,16 +146,9 @@ class DataHandler:
     def plot_sales(self):
         """Plot monthly and weekly sales"""
 
-        self.df['month'] = self.df['data'].dt.month
+        self.df['data'] = pd.to_datetime(self.df['data'])
         self.df['day_of_week'] = self.df['data'].dt.dayofweek
 
-        monthly_sales = self.df.groupby('month')['r_importo_lordo'].sum()
-        plt.figure(figsize=(10, 6))
-        monthly_sales.plot(kind='bar')
-        plt.title('Monthly Sales')
-        plt.xlabel('Month')
-        plt.ylabel('Gross Sales Amount')
-        plt.show()
 
         self.df['day_of_week'] = self.df['day_of_week'].apply(lambda x: x + 1)
         weekly_sales = self.df.groupby('day_of_week')['r_importo_lordo'].sum()

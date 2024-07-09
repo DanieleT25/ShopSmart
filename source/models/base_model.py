@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class CollaborativeFilter(ABC):
+class baseModel(ABC):
     @abstractmethod
     def fit(self, U):
         pass

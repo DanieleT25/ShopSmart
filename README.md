@@ -12,9 +12,10 @@ ShopSmart is a recommendation system that uses collaborative filtering to sugges
   - `03-compare.ipynb`
 - `source/`: Contains source code for models and utilities.
   - `models/`
+    - `base_model.py`
     - `collabFilter_ItemItem.py`
     - `collabFilter_UserUser.py`
-    - `collabFilter.py`
+    - `SVD.py`
   - `utils/`
     - `dataHandler.py`
     - `utils.py`

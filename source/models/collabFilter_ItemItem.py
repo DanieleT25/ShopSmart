@@ -1,7 +1,7 @@
 import numpy as np
-from .collabFilter import CollaborativeFilter
+from .base_model import baseModel
 
-class CollaborativeFilter_ItemItem(CollaborativeFilter):
+class CollaborativeFilter_ItemItem(baseModel):
     def __init__(self, N):
         self.N = N
         
