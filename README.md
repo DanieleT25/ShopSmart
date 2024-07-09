@@ -22,6 +22,7 @@ ShopSmart is a recommendation system that uses collaborative filtering to sugges
 - `README.md`: Project description.
 - `LICENSE`: Project license.
 - `requirements.txt`: Project dependencies.
+- `ShopSmart Project Report.pdf`: Report on ShopSmart project.
 
 ## Installation
 
