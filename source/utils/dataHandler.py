@@ -144,11 +144,10 @@ class DataHandler:
         plt.show()
 
     def plot_sales(self):
-        """Plot monthly and weekly sales"""
+        """Plot weekly sales"""
 
         self.df['data'] = pd.to_datetime(self.df['data'])
         self.df['day_of_week'] = self.df['data'].dt.dayofweek
-
 
         self.df['day_of_week'] = self.df['day_of_week'].apply(lambda x: x + 1)
         weekly_sales = self.df.groupby('day_of_week')['r_importo_lordo'].sum()
